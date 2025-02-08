@@ -1,6 +1,9 @@
 install: pyproject.toml
 	pip install --upgrade pip &&\
-	pip install . 
+	pip install --editable . 
+	pip install .[cli] 
+	pip install .[api] 
+	pip install .[test]
 
 lint:
 	# pylint --disable=R,C *.py &&\

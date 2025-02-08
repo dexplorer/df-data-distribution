@@ -60,7 +60,7 @@ def run_distribution_task(distribution_task_id: str, cycle_date: str) -> None:
     records = se.extract_sql_to_file(
         target_file_path=target_file_path,
         target_file_delim=tgt_dataset.file_delim,
-        sql_file_path=src_dataset.sql_file_path,
+        sql_file_path=sql_file_path,
         cur_eff_date=cur_eff_date,
     )
 

@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession, DataFrame
-
+from pyspark.sql.utils import AnalysisException
 # from pyspark.sql.types import StructType, StructField, StringType, DecimalType
 # from pyspark.sql import types as T
 
@@ -37,7 +37,15 @@ def resolve_sql_query(sql_query: str, key_value_map: dict) -> str:
 
 
 def run_spark_sql(spark: SparkSession, resolved_sql_query: str):
-    df = spark.sql(resolved_sql_query)
+    try:
+        df = spark.sql(resolved_sql_query)
+    except AnalysisException as error:
+        if '[TABLE_OR_VIEW_NOT_FOUND]' in str(error):
+            pass
+        else:
+            logging.error(error)
+            raise 
+
     df.printSchema()
     df.show(2)
     return df

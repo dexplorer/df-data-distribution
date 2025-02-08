@@ -2,8 +2,8 @@ import os
 import argparse
 import logging
 
-from distapp.settings import ConfigParms as sc
-from distapp import settings as scg
+from dist_app.settings import ConfigParms as sc
+from dist_app import settings as scg
 
 # Needed to pass the cfg from main app to sub app
 from dq_app.settings import ConfigParms as dq_sc
@@ -11,7 +11,7 @@ from dq_app import settings as dq_scg
 from dqml_app.settings import ConfigParms as dqml_sc
 from dqml_app import settings as dqml_scg
 
-from distapp import distapp_core as ddc
+from dist_app import dist_app_core as ddc
 from utils import logger as ufl
 
 from fastapi import FastAPI
