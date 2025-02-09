@@ -176,3 +176,6 @@ derby.log
 
 # Hive warehouse
 data/user/hive/warehouse
+
+# Notes
+scratchpad.txt

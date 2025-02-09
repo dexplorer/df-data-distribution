@@ -51,17 +51,17 @@ select
 ta.effective_date 
 , ta.asset_type 
 , ta.asset_name 
-, sum(tac.asset_value) as asset_value_agg 
-from dl_asset_mgmt.tassets ta 
+, sum(cast(tac.asset_value as decimal(25, 2))) as asset_value_agg 
+from dl_asset_mgmt.tasset ta 
 
-left join dl_asset_mgmt.taccount_pos tac 
+left join dl_asset_mgmt.tacct_pos tac 
 on ta.effective_date = tac.effective_date 
 and ta.asset_id = tac.asset_id 
 
 where ta.effective_date = ${effective_date_yyyy-mm-dd}
 
-group by ta.effective_date, ta.asset_type, tac.asset_name 
-order by ta.effective_date, ta.asset_type, tac.asset_name
+group by ta.effective_date, ta.asset_type, ta.asset_name 
+order by ta.effective_date, ta.asset_type, ta.asset_name
 ;
 
 ```
@@ -152,11 +152,14 @@ These are metadata that would be captured via the Metadata Management UI and sto
 
   ##### Dataset (asset_value_agg_20241226.dat)
 ```
+effective_date|asset_type|asset_name|asset_value_agg
+2024-12-26|equity|HCL Tech|-65000.00
+2024-12-26|mutual fund|Tata Digital Fund|-5000.00
 
 ```
 
   ##### Validation 
 ```
-Extract is successful. Source Record Count = 2, Target Record Count = 2
+Extract is successful. Source Record Count = 2, Target Record Count (without header) = 2
 
 ```

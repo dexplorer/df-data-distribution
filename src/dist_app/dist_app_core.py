@@ -3,7 +3,8 @@ from app_calendar import eff_date as ed
 from metadata import workflow as dw
 from metadata import distribution_task as dt
 
-from dist_app.settings import ConfigParms as sc
+# from dist_app.settings import ConfigParms as sc
+from config.settings import ConfigParms as sc
 from dist_app.dist_spark import extracter as se
 
 # Replace this with a API call in test/prod env
@@ -11,6 +12,40 @@ from dq_app import dq_app_core as dqc
 from dqml_app import dqml_app_core as dqmlc
 
 import logging
+
+
+def run_distribution_workflow(distribution_workflow_id: str, cycle_date: str) -> None:
+    # Simulate getting the cycle date from API
+    # Run this from the parent app
+    if not cycle_date:
+        cycle_date = ed.get_cur_cycle_date()
+
+    # Simulate getting the distribution workflow metadata from API
+    logging.info("Get distribution workflow metadata")
+    distribution_workflow = dw.DistributionWorkflow.from_json(
+        workflow_id=distribution_workflow_id, workflow_kind="distribution"
+    )
+
+    # Run pre-distribution tasks
+    logging.info("Running the pre-distribution tasks.")
+    run_pre_distribution_tasks(
+        tasks=distribution_workflow.pre_tasks, cycle_date=cycle_date
+    )
+
+    # Run distribution task
+    logging.info(
+        "Running the distribution task %s.", distribution_workflow.distribution_task_id
+    )
+    run_distribution_task(
+        distribution_task_id=distribution_workflow.distribution_task_id,
+        cycle_date=cycle_date,
+    )
+
+    # Run post-distribution tasks
+    logging.info("Running the post-distribution tasks.")
+    run_post_distribution_tasks(
+        tasks=distribution_workflow.post_tasks, cycle_date=cycle_date
+    )
 
 
 def run_distribution_task(distribution_task_id: str, cycle_date: str) -> None:
@@ -57,6 +92,7 @@ def run_distribution_task(distribution_task_id: str, cycle_date: str) -> None:
     )
 
     # Extract data
+    logging.info("Extracting data")
     records = se.extract_sql_to_file(
         target_file_path=target_file_path,
         target_file_delim=tgt_dataset.file_delim,
@@ -110,33 +146,3 @@ def run_post_distribution_tasks(
             run_data_quality_ml_task(
                 required_parameters=task.required_parameters, cycle_date=cycle_date
             )
-
-
-def run_distribution_workflow(distribution_workflow_id: str, cycle_date: str) -> None:
-
-    # Simulate getting the distribution workflow metadata from API
-    logging.info("Get distribution workflow metadata")
-    distribution_workflow = dw.DistributionWorkflow.from_json(
-        workflow_id=distribution_workflow_id, workflow_kind="distribution"
-    )
-
-    # Run pre-distribution tasks
-    logging.info("Running the pre-distribution tasks.")
-    run_pre_distribution_tasks(
-        tasks=distribution_workflow.pre_tasks, cycle_date=cycle_date
-    )
-
-    # Run distribution task
-    logging.info(
-        "Running the distribution task %s.", distribution_workflow.distribution_task_id
-    )
-    run_distribution_task(
-        distribution_task_id=distribution_workflow.distribution_task_id,
-        cycle_date=cycle_date,
-    )
-
-    # Run post-distribution tasks
-    logging.info("Running the post-distribution tasks.")
-    run_post_distribution_tasks(
-        tasks=distribution_workflow.post_tasks, cycle_date=cycle_date
-    )

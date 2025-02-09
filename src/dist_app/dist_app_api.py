@@ -2,8 +2,10 @@ import os
 import argparse
 import logging
 
-from dist_app.settings import ConfigParms as sc
-from dist_app import settings as scg
+# from dist_app.settings import ConfigParms as sc
+# from dist_app import settings as scg
+from config.settings import ConfigParms as sc
+from config import settings as scg
 
 # Needed to pass the cfg from main app to sub app
 from dq_app.settings import ConfigParms as dq_sc
@@ -16,6 +18,9 @@ from utils import logger as ufl
 
 from fastapi import FastAPI
 import uvicorn
+
+#
+APP_ROOT_DIR = "/workspaces/df-data-distribution"
 
 app = FastAPI()
 
@@ -72,11 +77,12 @@ def main():
     logging.info(args)
     env = args["env"]
 
+    scg.APP_ROOT_DIR = APP_ROOT_DIR
     sc.load_config(env)
     # Override sub app config with main app cfg
-    dq_scg.APP_ROOT_DIR = scg.APP_ROOT_DIR
+    dq_scg.APP_ROOT_DIR = APP_ROOT_DIR
     dq_sc.load_config(env)
-    dqml_scg.APP_ROOT_DIR = scg.APP_ROOT_DIR
+    dqml_scg.APP_ROOT_DIR = APP_ROOT_DIR
     dqml_sc.load_config(env)
 
     script_name = os.path.splitext(os.path.basename(__file__))[0]
