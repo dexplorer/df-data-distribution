@@ -2,16 +2,8 @@ import os
 import argparse
 import logging
 
-# from dist_app.settings import ConfigParms as sc
-# from dist_app import settings as scg
 from config.settings import ConfigParms as sc
 from config import settings as scg
-
-# Needed to pass the cfg from main app to sub app
-from dq_app.settings import ConfigParms as dq_sc
-from dq_app import settings as dq_scg
-from dqml_app.settings import ConfigParms as dqml_sc
-from dqml_app import settings as dqml_scg
 
 from dist_app import dist_app_core as ddc
 from utils import logger as ufl
@@ -80,10 +72,10 @@ def main():
     scg.APP_ROOT_DIR = APP_ROOT_DIR
     sc.load_config(env)
     # Override sub app config with main app cfg
-    dq_scg.APP_ROOT_DIR = APP_ROOT_DIR
-    dq_sc.load_config(env)
-    dqml_scg.APP_ROOT_DIR = APP_ROOT_DIR
-    dqml_sc.load_config(env)
+    # dq_scg.APP_ROOT_DIR = APP_ROOT_DIR
+    # dq_sc.load_config(env)
+    # dqml_scg.APP_ROOT_DIR = APP_ROOT_DIR
+    # dqml_sc.load_config(env)
 
     script_name = os.path.splitext(os.path.basename(__file__))[0]
     ufl.config_logger(log_file_path_name=f"{sc.log_file_path}/{script_name}.log")

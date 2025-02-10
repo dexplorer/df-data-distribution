@@ -3,10 +3,8 @@ from pyspark.sql.utils import AnalysisException
 
 # from pyspark.sql.types import StructType, StructField, StringType, DecimalType
 # from pyspark.sql import types as T
-
 # from pyspark.sql.functions import col
 
-# from dist_app.settings import ConfigParms as sc
 from config.settings import ConfigParms as sc
 from metadata import dataset as ds
 from utils import file_io as uff
