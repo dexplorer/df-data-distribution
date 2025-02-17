@@ -71,11 +71,6 @@ def main():
 
     scg.APP_ROOT_DIR = APP_ROOT_DIR
     sc.load_config(env)
-    # Override sub app config with main app cfg
-    # dq_scg.APP_ROOT_DIR = APP_ROOT_DIR
-    # dq_sc.load_config(env)
-    # dqml_scg.APP_ROOT_DIR = APP_ROOT_DIR
-    # dqml_sc.load_config(env)
 
     script_name = os.path.splitext(os.path.basename(__file__))[0]
     ufl.config_logger(log_file_path_name=f"{sc.log_file_path}/{script_name}.log")

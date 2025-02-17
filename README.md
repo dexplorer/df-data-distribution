@@ -4,6 +4,8 @@ This application runs a data distribution workflow to extract data from spark ta
 
 It runs the configured pre-distribution and post-distribution (data quality checks) tasks as part of the workflow.
 
+Also, it runs the data lineage task to capture the relationships. This is not optional.
+
 Application can be invoked using CLI or REST API end points. This allows the app to be integrated into a larger data ingestion / distribution framework.
 
 ### Install
@@ -17,12 +19,12 @@ Application can be invoked using CLI or REST API end points. This allows the app
 
 - **Run a distribution workflow via CLI**:
   ```sh
-    dist-app-cli run-distribution-workflow --distribution_workflow_id "1" --env "dev"
+    dist-app-cli run-distribution-workflow --distribution_workflow_id "11" --env "dev"
   ```
 
 - **Run a distribution workflow via CLI with cycle date override**:
   ```sh
-    dist-app-cli run-distribution-workflow --distribution_workflow_id "1" --env "dev" --cycle_date "2024-12-24"
+    dist-app-cli run-distribution-workflow --distribution_workflow_id "11" --env "dev" --cycle_date "2024-12-24"
   ```
 
 - **Run a distribution workflow via API**:
@@ -35,8 +37,8 @@ Application can be invoked using CLI or REST API end points. This allows the app
     https://<host name with port number>/run-distribution-workflow/?distribution_workflow_id=<value>
     https://<host name with port number>/run-distribution-workflow/?distribution_workflow_id=<value>&cycle_date=<value>
 
-    /run-distribution-workflow/?distribution_workflow_id=3
-    /run-distribution-workflow/?distribution_workflow_id=1&cycle_date=2024-12-26
+    /run-distribution-workflow/?distribution_workflow_id=11
+    /run-distribution-workflow/?distribution_workflow_id=11&cycle_date=2024-12-26
   ```
   ##### Invoke the API from Swagger Docs interface
   ```sh
@@ -69,31 +71,27 @@ order by ta.effective_date, ta.asset_type, ta.asset_name
 ### API Data (simulated)
 These are metadata that would be captured via the Metadata Management UI and stored in a database.
 
-  ##### datasets 
+  ##### Datasets 
 ```
 {
     "datasets": [
       {
         "dataset_id": "4",
-        "dataset_kind": "spark sql file",
+        "dataset_type": "spark sql file",
         "catalog_ind": false,
-        "schedule_id": "2", 
-        "dq_rule_ids": null, 
-        "model_parameters": null, 
-        "sql_file_path": "APP_ROOT_DIR/sql/ext_asset_value_agg.sql"
-      }, 
+        "schedule_id": "2",
+        "sql_file_path": "APP_SQL_SCRIPT_DIR/ext_asset_value_agg.sql"
+      },
       {
         "dataset_id": "14",
-        "dataset_kind": "local delim file",
+        "dataset_type": "local delim file",
         "catalog_ind": true,
         "file_delim": "|",
-        "file_path": "APP_ROOT_DIR/data/asset_value_agg_yyyymmdd.dat", 
-        "schedule_id": "2", 
-        "dq_rule_ids": null, 
-        "model_parameters": null, 
-        "recon_file_delim": null, 
-        "recon_file_path": null 
-      } 
+        "file_path": "APP_DATA_OUT_DIR/asset_value_agg_yyyymmdd.dat",
+        "schedule_id": "2",
+        "recon_file_delim": null,
+        "recon_file_path": null
+      }
     ]
   }
 
@@ -102,11 +100,11 @@ These are metadata that would be captured via the Metadata Management UI and sto
   ##### Distribution Workflows 
 ```
 {
-    "distribution_workflows": [
+    "workflows": [
       {
-        "workflow_id": "1",
-        "workflow_kind": "distribution", 
-        "distribution_task_id": "1",
+        "workflow_id": "11",
+        "workflow_type": "distribution", 
+        "distribution_task_id": "11",
         "pre_tasks": [
         ],
         "post_tasks": [
@@ -132,9 +130,10 @@ These are metadata that would be captured via the Metadata Management UI and sto
   ##### Distribution Tasks 
 ```
 {
-    "distribution_tasks": [
+    "integration_tasks": [
       {
-        "distribution_task_id": "1",
+        "task_id": "11",
+        "task_type": "distribution",
         "source_dataset_id": "4",
         "target_dataset_id": "14",
         "distribution_pattern": {
@@ -142,7 +141,7 @@ These are metadata that would be captured via the Metadata Management UI and sto
             "source_type": "spark sql file", 
             "target_type": "local delim file" 
         } 
-      }
+      }  
     ]
   }
   

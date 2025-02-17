@@ -9,8 +9,6 @@ from config import settings as scg
 from dist_app import dist_app_core as ddc
 from utils import logger as ufl
 
-from dist_app import dist_app_core as ddc
-
 # Following imports are needed to load test data only.
 from ingest_app import ingest_app_core as dic
 

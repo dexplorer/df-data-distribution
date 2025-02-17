@@ -1,7 +1,7 @@
 from metadata import dataset as ds
 from app_calendar import eff_date as ed
-from metadata import workflow as dw
-from metadata import distribution_task as dt
+from metadata import workflow as wf
+from metadata import integration_task as it
 
 # from dist_app.settings import ConfigParms as sc
 from config.settings import ConfigParms as sc
@@ -10,6 +10,7 @@ from dist_app.dist_spark import extracter as se
 # Replace this with a API call in test/prod env
 from dq_app import dq_app_core as dqc
 from dqml_app import dqml_app_core as dqmlc
+from dl_app import dl_app_core as dlc
 
 import logging
 
@@ -22,8 +23,8 @@ def run_distribution_workflow(distribution_workflow_id: str, cycle_date: str) ->
 
     # Simulate getting the distribution workflow metadata from API
     logging.info("Get distribution workflow metadata")
-    distribution_workflow = dw.DistributionWorkflow.from_json(
-        workflow_id=distribution_workflow_id, workflow_kind="distribution"
+    distribution_workflow = wf.DistributionWorkflow.from_json(
+        workflow_id=distribution_workflow_id
     )
 
     # Run pre-distribution tasks
@@ -47,20 +48,21 @@ def run_distribution_workflow(distribution_workflow_id: str, cycle_date: str) ->
         tasks=distribution_workflow.post_tasks, cycle_date=cycle_date
     )
 
+    # Data lineage is required for all workflows
+    run_data_lineage_task(workflow_id=distribution_workflow_id, cycle_date=cycle_date)
+
 
 def run_distribution_task(distribution_task_id: str, cycle_date: str) -> None:
     # Simulate getting the distribution task metadata from API
     logging.info("Get distribution task metadata")
-    distribution_task = dt.DistributionTask.from_json(
-        distribution_task_id=distribution_task_id
-    )
+    distribution_task = it.DistributionTask.from_json(task_id=distribution_task_id)
 
     # Simulate getting the outbound dataset metadata from API
     logging.info("Get source dataset metadata")
     src_dataset = []
     if (
         distribution_task.distribution_pattern.source_type
-        == ds.DatasetKind.SPARK_SQL_FILE
+        == ds.DatasetType.SPARK_SQL_FILE
     ):
         src_dataset = ds.SparkSqlFileDataset.from_json(
             dataset_id=distribution_task.source_dataset_id
@@ -73,7 +75,7 @@ def run_distribution_task(distribution_task_id: str, cycle_date: str) -> None:
     tgt_dataset = []
     if (
         distribution_task.distribution_pattern.target_type
-        == ds.DatasetKind.LOCAL_DELIM_FILE
+        == ds.DatasetType.LOCAL_DELIM_FILE
     ):
         tgt_dataset = ds.LocalDelimFileDataset.from_json(
             dataset_id=distribution_task.target_dataset_id
@@ -128,14 +130,31 @@ def run_data_quality_ml_task(required_parameters: dict, cycle_date: str) -> None
     logging.info("Finished detecting anomalies in the dataset %s", dataset_id)
 
 
-def run_pre_distribution_tasks(tasks: list[dw.ManagementTask], cycle_date: str) -> None:
+def run_data_lineage_task(workflow_id: str, cycle_date: str) -> None:
+    logging.info(
+        "Start capturing data lineage relationships forn the workflow %s", workflow_id
+    )
+    dl_relationships = dlc.capture_relationships(
+        workflow_id=workflow_id, cycle_date=cycle_date
+    )
+
+    logging.info(
+        "Finished capturing data lineage relationships for the workflow %s",
+        workflow_id
+    )
+
+    logging.info("Data lineage relationships for the workflow %s", workflow_id)
+    logging.info(dl_relationships)
+
+
+def run_pre_distribution_tasks(tasks: list[wf.ManagementTask], cycle_date: str) -> None:
     if not tasks:
         logging.info("There are no pre distribution tasks to run.")
         logging.info("Cycle date is %s.", cycle_date)
 
 
 def run_post_distribution_tasks(
-    tasks: list[dw.ManagementTask], cycle_date: str
+    tasks: list[wf.ManagementTask], cycle_date: str
 ) -> None:
     for task in tasks:
         if task.name == "data quality":

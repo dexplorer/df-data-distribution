@@ -176,6 +176,7 @@ derby.log
 
 # Hive warehouse
 data/user/hive/warehouse
+spark-warehouse
 
 # Notes
 scratchpad.txt
