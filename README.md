@@ -11,12 +11,12 @@ Application can be invoked using CLI or REST API end points. This allows the app
 ## Sub Modules
 The data distribution service leverages the following services to perform the tasks in the data distribution pipeline.
 
-![Metadata Management Service](https://github.com/dexplorer/df-metadata)
-![Application Calendar Service](https://github.com/dexplorer/df-app-calendar)
-![Data Quality Service](https://github.com/dexplorer/df-data-quality)
-![Data Quality ML Service](https://github.com/dexplorer/df-data-quality-ml)
-![Data Profiling Service](https://github.com/dexplorer/df-data-profile)
-![Data Lineage Service](https://github.com/dexplorer/df-data-lineage)
+[Metadata Management Service](https://github.com/dexplorer/df-metadata)
+[Application Calendar Service](https://github.com/dexplorer/df-app-calendar)
+[Data Quality Service](https://github.com/dexplorer/df-data-quality)
+[Data Quality ML Service](https://github.com/dexplorer/df-data-quality-ml)
+[Data Profiling Service](https://github.com/dexplorer/df-data-profile)
+[Data Lineage Service](https://github.com/dexplorer/df-data-lineage)
 
 ## Data Flow
 
