@@ -20,16 +20,25 @@ classifiers = [
 dependencies = [
   # app specific 
   "pyspark == 3.5.4",
+  "python-dotenv", 
+  "utils", 
+  "metadata", 
+  "app_calendar", 
+  "config", 
+  "dq_app", 
+  "dqml_app", 
+  "dl_app", 
+  "ingest_app", 
   # my packages
-  "utils @ git+https://github.com/dexplorer/utils",
-  "metadata @ git+https://github.com/dexplorer/df-metadata",
-  "app_calendar @ git+https://github.com/dexplorer/df-app-calendar",
-  "config @ git+https://github.com/dexplorer/df-config",
+  #"utils @ git+https://github.com/dexplorer/utils",
+  #"metadata @ git+https://github.com/dexplorer/df-metadata",
+  #"app_calendar @ git+https://github.com/dexplorer/df-app-calendar",
+  #"config @ git+https://github.com/dexplorer/df-config",
   # "dq_app @ git+https://github.com/dexplorer/df-data-quality.git@v0.0.1",
-  "dq_app @ git+https://github.com/dexplorer/df-data-quality",
-  "dqml_app @ git+https://github.com/dexplorer/df-data-quality-ml",
-  "dl_app @ git+https://github.com/dexplorer/df-data-lineage",
-  "ingest_app @ git+https://github.com/dexplorer/df-data-ingestion",
+  #"dq_app @ git+https://github.com/dexplorer/df-data-quality",
+  #"dqml_app @ git+https://github.com/dexplorer/df-data-quality-ml",
+  #"dl_app @ git+https://github.com/dexplorer/df-data-lineage",
+  #"ingest_app @ git+https://github.com/dexplorer/df-data-ingestion",
 ]
 keywords = ["data", "distribution", "etl", "elt", "framework", "extract"]
 

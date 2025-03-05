@@ -27,6 +27,15 @@ The data distribution service leverages the following services to perform the ta
 
 ![Data Distribution Pipeline](docs/df-data-distribution.png?raw=true "Data Distribution Pipeline")
 
+### Define the environment variables
+
+Create a .env file with the following variables.
+
+```
+ENV=dev
+APP_ROOT_DIR=
+```
+
 ### Install
 
 - **Install via Makefile and pip**:
@@ -38,26 +47,26 @@ The data distribution service leverages the following services to perform the ta
 
 - **Run a distribution workflow via CLI**:
   ```sh
-    dist-app-cli run-distribution-workflow --distribution_workflow_id "11" --env "dev"
+    dist-app-cli run-distribution-workflow --distribution_workflow_id "workflow_11"
   ```
 
 - **Run a distribution workflow via CLI with cycle date override**:
   ```sh
-    dist-app-cli run-distribution-workflow --distribution_workflow_id "11" --env "dev" --cycle_date "2024-12-24"
+    dist-app-cli run-distribution-workflow --distribution_workflow_id "workflow_11" --cycle_date "2024-12-26"
   ```
 
 - **Run a distribution workflow via API**:
   ##### Start the API server
   ```sh
-    dist-app-api --env "dev"
+    dist-app-api
   ```
   ##### Invoke the API endpoint
   ```sh
     https://<host name with port number>/run-distribution-workflow/?distribution_workflow_id=<value>
     https://<host name with port number>/run-distribution-workflow/?distribution_workflow_id=<value>&cycle_date=<value>
 
-    /run-distribution-workflow/?distribution_workflow_id=11
-    /run-distribution-workflow/?distribution_workflow_id=11&cycle_date=2024-12-26
+    /run-distribution-workflow/?distribution_workflow_id=workflow_11
+    /run-distribution-workflow/?distribution_workflow_id=workflow_11&cycle_date=2024-12-26
   ```
   ##### Invoke the API from Swagger Docs interface
   ```sh
@@ -93,26 +102,26 @@ These are metadata that would be captured via the Metadata Management UI and sto
   ##### Datasets 
 ```
 {
-    "datasets": [
-      {
-        "dataset_id": "4",
-        "dataset_type": "spark sql file",
-        "catalog_ind": false,
-        "schedule_id": "2",
-        "sql_file_path": "APP_SQL_SCRIPT_DIR/ext_asset_value_agg.sql"
-      },
-      {
-        "dataset_id": "14",
-        "dataset_type": "local delim file",
-        "catalog_ind": true,
-        "file_delim": "|",
-        "file_path": "APP_DATA_OUT_DIR/asset_value_agg_yyyymmdd.dat",
-        "schedule_id": "2",
-        "recon_file_delim": null,
-        "recon_file_path": null
-      }
-    ]
-  }
+  "datasets": [
+    {
+      "dataset_id": "dataset_4",
+      "dataset_type": "spark sql file",
+      "schedule_id": "schedule_2",
+      "data_source_id": "data_source_4",
+      "sql_file_path": "APP_SQL_SCRIPT_DIR/ext_asset_value_agg.sql"
+    },
+    {
+      "dataset_id": "dataset_14",
+      "dataset_type": "local delim file",
+      "file_delim": "|",
+      "file_path": "APP_DATA_OUT_DIR/asset_value_agg_yyyymmdd.dat",
+      "schedule_id": "schedule_2",
+      "data_source_id": "data_source_4",
+      "recon_file_delim": null,
+      "recon_file_path": null
+    } 
+  ]
+}
 
 ```
 
@@ -121,22 +130,22 @@ These are metadata that would be captured via the Metadata Management UI and sto
 {
     "workflows": [
       {
-        "workflow_id": "11",
+        "workflow_id": "workflow_11",
         "workflow_type": "distribution", 
-        "distribution_task_id": "11",
+        "distribution_task_id": "integration_task_11",
         "pre_tasks": [
         ],
         "post_tasks": [
           {
             "name": "data quality",
             "required_parameters": {
-              "dataset_id": "14"
+              "dataset_id": "dataset_14"
             }
           },
           {
             "name": "data quality ml",
             "required_parameters": {
-              "dataset_id": "14"
+              "dataset_id": "dataset_14"
             }
           }
         ]
@@ -151,16 +160,16 @@ These are metadata that would be captured via the Metadata Management UI and sto
 {
     "integration_tasks": [
       {
-        "task_id": "11",
+        "task_id": "integration_task_11",
         "task_type": "distribution",
-        "source_dataset_id": "4",
-        "target_dataset_id": "14",
+        "source_dataset_id": "dataset_4",
+        "target_dataset_id": "dataset_14",
         "distribution_pattern": {
             "extracter": "spark",
             "source_type": "spark sql file", 
             "target_type": "local delim file" 
         } 
-      }  
+      }      
     ]
   }
   

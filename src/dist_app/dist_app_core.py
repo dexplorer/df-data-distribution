@@ -2,10 +2,10 @@ from metadata import dataset as ds
 from app_calendar import eff_date as ed
 from metadata import workflow as wf
 from metadata import integration_task as it
-
-# from dist_app.settings import ConfigParms as sc
 from config.settings import ConfigParms as sc
 from dist_app.dist_spark import extracter as se
+from ingest_app.ingest_spark import create_session as cs
+from pyspark.sql import SparkSession
 
 # Replace this with a API call in test/prod env
 from dq_app import dq_app_core as dqc
@@ -27,6 +27,9 @@ def run_distribution_workflow(distribution_workflow_id: str, cycle_date: str) ->
         workflow_id=distribution_workflow_id
     )
 
+    # Create Spark session
+    spark = cs.create_spark_session(warehouse_path=sc.hive_warehouse_path)
+
     # Run pre-distribution tasks
     logging.info("Running the pre-distribution tasks.")
     run_pre_distribution_tasks(
@@ -38,6 +41,7 @@ def run_distribution_workflow(distribution_workflow_id: str, cycle_date: str) ->
         "Running the distribution task %s.", distribution_workflow.distribution_task_id
     )
     run_distribution_task(
+        spark=spark,
         distribution_task_id=distribution_workflow.distribution_task_id,
         cycle_date=cycle_date,
     )
@@ -52,7 +56,9 @@ def run_distribution_workflow(distribution_workflow_id: str, cycle_date: str) ->
     run_data_lineage_task(workflow_id=distribution_workflow_id, cycle_date=cycle_date)
 
 
-def run_distribution_task(distribution_task_id: str, cycle_date: str) -> None:
+def run_distribution_task(
+    spark: SparkSession, distribution_task_id: str, cycle_date: str
+) -> None:
     # Simulate getting the distribution task metadata from API
     logging.info("Get distribution task metadata")
     distribution_task = it.DistributionTask.from_json(task_id=distribution_task_id)
@@ -96,6 +102,7 @@ def run_distribution_task(distribution_task_id: str, cycle_date: str) -> None:
     # Extract data
     logging.info("Extracting data")
     records = se.extract_sql_to_file(
+        spark=spark,
         target_file_path=target_file_path,
         target_file_delim=tgt_dataset.file_delim,
         sql_file_path=sql_file_path,
@@ -139,8 +146,7 @@ def run_data_lineage_task(workflow_id: str, cycle_date: str) -> None:
     )
 
     logging.info(
-        "Finished capturing data lineage relationships for the workflow %s",
-        workflow_id
+        "Finished capturing data lineage relationships for the workflow %s", workflow_id
     )
 
     logging.info("Data lineage relationships for the workflow %s", workflow_id)

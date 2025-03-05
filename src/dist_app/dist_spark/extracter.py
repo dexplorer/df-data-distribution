@@ -4,31 +4,12 @@ from pyspark.sql.utils import AnalysisException
 # from pyspark.sql.types import StructType, StructField, StringType, DecimalType
 # from pyspark.sql import types as T
 # from pyspark.sql.functions import col
-
-from config.settings import ConfigParms as sc
 from metadata import dataset as ds
 from utils import file_io as uff
 from utils import csv_io as ufc
-
 import os
 import tempfile
-
 import logging
-
-
-def create_spark_session(warehouse_path) -> SparkSession:
-    # Initialize Spark session
-    spark = (
-        SparkSession.builder.appName("Spark Loader in Distribution Workflow")
-        .config("spark.sql.warehouse.dir", warehouse_path)
-        .enableHiveSupport()
-        .getOrCreate()
-    )
-
-    # Enable dynamic partition overwrite
-    spark.conf.set("spark.sql.sources.partitionOverwriteMode", "dynamic")
-
-    return spark
 
 
 def resolve_sql_query(sql_query: str, key_value_map: dict) -> str:
@@ -122,12 +103,12 @@ def validate_extract(df: DataFrame, file_path: str):
 
 
 def extract_sql_to_file(
+    spark: SparkSession,
     target_file_path: str,
     target_file_delim: str,
     sql_file_path: str,
     cur_eff_date: str,
 ):
-    spark = create_spark_session(warehouse_path=sc.hive_warehouse_path)
     key_value_map = {
         "${effective_date_yyyy-mm-dd}": f"'{cur_eff_date}'",
     }
