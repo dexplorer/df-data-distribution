@@ -28,7 +28,7 @@ def run_distribution_workflow(distribution_workflow_id: str, cycle_date: str) ->
     )
 
     # Create Spark session
-    spark = cs.create_spark_session(warehouse_path=sc.hive_warehouse_path)
+    spark = cs.create_spark_session(warehouse_path=sc.hive_warehouse_dir)
 
     # Run pre-distribution tasks
     logging.info("Running the pre-distribution tasks.")

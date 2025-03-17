@@ -21,6 +21,7 @@ dependencies = [
   # app specific 
   "pyspark == 3.5.4",
   "python-dotenv", 
+  # my packages
   "utils", 
   "metadata", 
   "app_calendar", 
