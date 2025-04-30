@@ -21,29 +21,38 @@ dependencies = [
   # app specific 
   "pyspark == 3.5.4",
   "python-dotenv", 
-  # my packages
-  "utils", 
-  "metadata", 
-  "app_calendar", 
-  "config", 
-  "dq_app", 
-  "dqml_app", 
-  "dl_app", 
-  "ingest_app", 
-  # my packages
-  #"utils @ git+https://github.com/dexplorer/utils",
-  #"metadata @ git+https://github.com/dexplorer/df-metadata",
-  #"app_calendar @ git+https://github.com/dexplorer/df-app-calendar",
-  #"config @ git+https://github.com/dexplorer/df-config",
-  # "dq_app @ git+https://github.com/dexplorer/df-data-quality.git@v0.0.1",
-  #"dq_app @ git+https://github.com/dexplorer/df-data-quality",
-  #"dqml_app @ git+https://github.com/dexplorer/df-data-quality-ml",
-  #"dl_app @ git+https://github.com/dexplorer/df-data-lineage",
-  #"ingest_app @ git+https://github.com/dexplorer/df-data-ingestion",
 ]
 keywords = ["data", "distribution", "etl", "elt", "framework", "extract"]
 
 [project.optional-dependencies]
+my-packages-local = [
+  # my packages (installed locally)
+  "utils[spark]",
+  "utils[aws]",
+  "metadata",
+  "app_calendar",
+  "config",
+  "gov",
+  #"dl_app", 
+  #"dp_app", 
+  #"dq_app", 
+  #"dqml_app", 
+  #"dr_app", 
+]
+my-packages-container = [
+  # my packages (source in container)
+  "utils[spark] @ file:///packages/utils",
+  "utils[aws] @ file:///packages/utils",
+  "metadata @ file:///packages/df-metadata",
+  "app_calendar @ file:///packages/df-app-calendar",
+  "config @ file:///packages/df-config",
+  "gov @ file:///packages/df-data-governance",
+  #"dl_app @ file:///packages/df-data-lineage",
+  #"dp_app @ file:///packages/df-data-profile",
+  #"dq_app @ file:///packages/df-data-quality",
+  #"dqml_app @ file:///packages/df-data-quality-ml",
+  #"dr_app @ file:///packages/df-data-recon",
+]
 api = [
   "fastapi" , 
   "uvicorn[standard]", 
@@ -59,6 +68,12 @@ test = [
   "black",
   "ipython",
 ]
+all-dev = [
+  "ingest_app[my-packages-local, cli, api, test]"
+  ]
+all = [
+  "ingest_app[my-packages-container, cli, api]"
+  ]
 
 [project.scripts]
 dist-app-cli = "dist_app.dist_app_cli:main"

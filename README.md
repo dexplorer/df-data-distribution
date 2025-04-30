@@ -27,39 +27,101 @@ The data distribution service leverages the following services to perform the ta
 
 ![Data Distribution Pipeline](docs/df-data-distribution.png?raw=true "Data Distribution Pipeline")
 
-### Define the environment variables
+### Define the Environment Variables
 
-Create a .env file with the following variables.
+Update one of the following .env files which is appropriate for the application hosting pattern.
 
 ```
-ENV=dev
-APP_ROOT_DIR=/workspaces/df-data-distribution
-NAS_ROOT_DIR=/workspaces/nas
+.env.on_prem_vm_native
+.env.aws_ec2_native
+.env.aws_ec2_container
+.env.aws_ecs_container
 ```
 
 ### Install
 
 - **Install via Makefile and pip**:
   ```
-    make install
+    make install-dev
+  ```
+
+### Start the Spark Standalone Cluster
+
+In df-spark project,
+```sh
+APP_INFRA_USER_NAME="ec2-user" APP_INFRA_USER_GROUP_NAME="ec2-user" docker-compose up --build
+```
+
+### Start the Data Management Services
+
+In df-data-governance project,
+```sh
+docker-compose --project-name=df-spark up
+```
+
+### Start the Data Management Services Individually
+
+##### Data Lineage Service
+  ```sh
+    docker run \
+    --mount=type=bind,src=/nas,dst=/nas \
+    -p 9091:9090 \
+    --rm -it df-data-lineage:latest \
+    dl-app-api --app_host_pattern "aws_ec2_container"
+  ```
+
+##### Data Profile Service
+  ```sh
+    docker run \
+    --mount=type=bind,src=/nas,dst=/nas \
+    -p 9092:9090 \
+    --rm -it df-data-profile:latest \
+    dp-app-api --app_host_pattern "aws_ec2_container"
+  ```
+
+##### Data Quality Service
+  ```sh
+    docker run \
+    --mount=type=bind,src=/nas,dst=/nas \
+    -p 9093:9090 \
+    --rm -it df-data-quality:latest \
+    dq-app-api --app_host_pattern "aws_ec2_container"
+  ```
+
+##### Data Quality ML Service
+  ```sh
+    docker run \
+    --mount=type=bind,src=/nas,dst=/nas \
+    -p 9094:9090 \
+    --rm -it df-data-quality-ml:latest \
+    dqml-app-api --app_host_pattern "aws_ec2_container"
+  ```
+
+##### Data Reconciliation Service
+  ```sh
+    docker run \
+    --mount=type=bind,src=/nas,dst=/nas \
+    -p 9095:9090 \
+    --rm -it df-data-recon:latest \
+    dr-app-api --app_host_pattern "aws_ec2_container"
   ```
 
 ### Usage Examples
 
 - **Run a distribution workflow via CLI**:
   ```sh
-    dist-app-cli run-distribution-workflow --distribution_workflow_id "workflow_11"
+    dist-app-cli --app_host_pattern "aws_ec2_native" run-distribution-workflow --distribution_workflow_id "workflow_11"
   ```
 
 - **Run a distribution workflow via CLI with cycle date override**:
   ```sh
-    dist-app-cli run-distribution-workflow --distribution_workflow_id "workflow_11" --cycle_date "2024-12-26"
+    dist-app-cli --app_host_pattern "aws_ec2_native" run-distribution-workflow --distribution_workflow_id "workflow_11" --cycle_date "2024-12-26"
   ```
 
-- **Run a distribution workflow via API**:
+- **Run a Distribution Workflow via API**:
   ##### Start the API server
   ```sh
-    dist-app-api
+    dist-app-api --app_host_pattern "aws_ec2_native"
   ```
   ##### Invoke the API endpoint
   ```sh
